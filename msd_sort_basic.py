@@ -33,27 +33,33 @@ class MSDSortBasic:
         return -1
     
     def sort_by_position(self, arr: List[str], d: int) -> None:
-        """
-        Sort the array of strings based on the character at position d.
-        
-        Args:
-            arr: The array of strings to sort
-            d: The character position to sort by (0-indexed)
-        """
         n = len(arr)
         if n <= 1:
             return
-        
-        # Create auxiliary array for distribution
+
+        count = [0] * (self.R + 2)  # Room for -1 to 255 (shifted)
+
+        # Step 1: Frequency counts
+        for s in arr:
+            c = self._char_at(s, d) + 1
+            count[c + 1] += 1
+
+        # Step 2: Cumulative counts
+        for r in range(self.R + 1):
+            count[r + 1] += count[r]
+
+        # Step 3: Distribute (stable)
         aux = [None] * n
-        
-        # STUDENT TODO: Implement key-indexed counting sort
-        # 1. Count frequency of each character at position d
-        # 2. Compute cumulative counts to determine positions
-        # 3. Distribute strings to auxiliary array
-        # 4. Copy back to original array
-        pass
-    
+        for s in arr:
+            c = self._char_at(s, d) + 1
+            aux[count[c]] = s
+            count[c] += 1
+
+        # Step 4: Copy back
+        for i in range(n):
+            arr[i] = aux[i]
+
+
     def is_sorted_by_position(self, arr: List[str], d: int) -> bool:
         """
         Check if the array is sorted by the character at position d.
